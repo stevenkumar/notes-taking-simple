@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ComponentType } from "react";
 import { ArrowLeft, Construction, Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCalculator } from "@/modules/calculator/registry/calculator-registry";
+import { DiscountCalculator } from "@/modules/calculator/components/discount/discount-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -13,6 +15,11 @@ const VALID_IDS: CalculatorId[] = [
   "discount", "age", "date-time", "unit", "currency",
   "salary", "profit-loss", "ratio", "split-bill", "bmi", "fuel", "electricity",
 ];
+
+/** Tools with a built interactive UI. Others show the construction state. */
+const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
+  discount: DiscountCalculator,
+};
 
 /** Pre-render every known calculator page at build time. */
 export function generateStaticParams() {
@@ -44,6 +51,7 @@ export default async function CalculatorToolPage({ params }: Props) {
   if (!tool) notFound();
 
   const isPlanned = tool.status === "planned";
+  const ToolView = TOOL_VIEWS[tool.id];
 
   return (
     <div className="space-y-6">
@@ -81,6 +89,8 @@ export default async function CalculatorToolPage({ params }: Props) {
             </Link>
           </CardContent>
         </Card>
+      ) : ToolView ? (
+        <ToolView />
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
