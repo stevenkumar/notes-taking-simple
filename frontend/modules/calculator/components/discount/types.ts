@@ -118,37 +118,14 @@ export function newRowId(prefix: string): string {
 }
 
 // ── Result view (what ResultPanel renders) ───────────────────
+// Shared across all calculator tools — see components/shared/result-types.ts.
 
-export interface ResultRow {
-  label: string;
-  value: string;
-  /** Slightly stronger weight (totals). */
-  emphasis?: boolean;
-}
-
-export interface ResultBreakdown {
-  title: string;
-  rows: ResultRow[];
-}
-
-export interface ResultView {
-  headlineLabel: string;
-  headlineValue: string;
-  subLabel?: string;
-  subValue?: string;
-  rows: ResultRow[];
-  /** Optional per-step / per-item detail list. */
-  breakdown?: ResultBreakdown;
-  /** Formula or calculation-order explanation, e.g. "₹2,000 × 20% = ₹400". */
-  note?: string;
-  /** Plain-text summary for copy/share. */
-  copyText: string;
-}
-
-export type ComputeState =
-  | { state: "incomplete" }
-  | { state: "error"; message: string }
-  | { state: "ok"; view: ResultView };
+export type {
+  ResultRow,
+  ResultBreakdown,
+  ResultView,
+  ComputeState,
+} from "../shared/result-types";
 
 // ── Mode metadata ────────────────────────────────────────────
 

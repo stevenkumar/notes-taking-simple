@@ -1,11 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { AlertCircle, Calculator, Copy, Check, Share2, Save, RotateCcw } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
-import type { ComputeState } from "./types";
+import type { ComputeState } from "./result-types";
 
 interface ResultPanelProps {
   result: ComputeState;

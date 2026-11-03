@@ -14,7 +14,7 @@ import {
 } from "@/utils/history";
 import type { HistoryEntry } from "../../types";
 import { computeDiscountResult } from "./compute";
-import { ResultPanel } from "./result-panel";
+import { ResultPanel } from "../shared/result-panel";
 import {
   BasketFormView,
   BogoFormView,
