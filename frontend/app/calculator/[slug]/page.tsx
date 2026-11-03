@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ComponentType } from "react";
+import { Suspense, type ComponentType } from "react";
 import { ArrowLeft, Construction, Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,19 +40,10 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default async function CalculatorToolPage({ params }: Props) {
-  const { slug } = await params;
-
-  if (!VALID_IDS.includes(slug as CalculatorId)) {
-    notFound();
-  }
-
-  const tool = getCalculator(slug as CalculatorId);
-  if (!tool) notFound();
-
-  const isPlanned = tool.status === "planned";
-  const ToolView = TOOL_VIEWS[tool.id];
-
+export default function CalculatorToolPage({ params }: Props) {
+  // The back link is URL-independent, so it stays in the shared App Shell.
+  // The slug-dependent region streams in behind Suspense (Next 16 instant
+  // navigation: URL data must not be read outside a boundary).
   return (
     <div className="space-y-6">
       <Link
@@ -63,6 +54,41 @@ export default async function CalculatorToolPage({ params }: Props) {
         All calculators
       </Link>
 
+      <Suspense fallback={<ToolViewSkeleton />}>
+        <ToolView params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+/** Placeholder approximating the final layout to avoid layout shift. */
+function ToolViewSkeleton() {
+  return (
+    <div className="space-y-6" aria-hidden="true">
+      <div className="space-y-2.5">
+        <div className="h-8 w-64 max-w-full animate-pulse rounded-md bg-muted" />
+        <div className="h-4 w-96 max-w-full animate-pulse rounded-md bg-muted" />
+      </div>
+      <div className="h-64 animate-pulse rounded-xl bg-muted" />
+    </div>
+  );
+}
+
+async function ToolView({ params }: Props) {
+  const { slug } = await params;
+
+  if (!VALID_IDS.includes(slug as CalculatorId)) {
+    notFound();
+  }
+
+  const tool = getCalculator(slug as CalculatorId);
+  if (!tool) notFound();
+
+  const isPlanned = tool.status === "planned";
+  const ToolComponent = TOOL_VIEWS[tool.id];
+
+  return (
+    <>
       <PageHeader
         title={tool.name}
         description={tool.description}
@@ -89,8 +115,8 @@ export default async function CalculatorToolPage({ params }: Props) {
             </Link>
           </CardContent>
         </Card>
-      ) : ToolView ? (
-        <ToolView />
+      ) : ToolComponent ? (
+        <ToolComponent />
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
@@ -112,6 +138,6 @@ export default async function CalculatorToolPage({ params }: Props) {
           </CardContent>
         </Card>
       )}
-    </div>
+    </>
   );
 }
