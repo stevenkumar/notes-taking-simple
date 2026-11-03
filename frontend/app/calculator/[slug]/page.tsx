@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCalculator } from "@/modules/calculator/registry/calculator-registry";
 import { DiscountCalculator } from "@/modules/calculator/components/discount/discount-calculator";
+import { GstCalculator } from "@/modules/calculator/components/gst/gst-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -19,6 +20,7 @@ const VALID_IDS: CalculatorId[] = [
 /** Tools with a built interactive UI. Others show the construction state. */
 const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   discount: DiscountCalculator,
+  gst: GstCalculator,
 };
 
 /** Pre-render every known calculator page at build time. */
