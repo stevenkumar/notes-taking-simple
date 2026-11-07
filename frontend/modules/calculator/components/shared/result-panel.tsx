@@ -80,21 +80,23 @@ export function ResultPanel({
             )}
 
             {/* Detail rows */}
-            <dl className="mt-5 space-y-2.5 border-t border-border pt-4">
-              {result.view.rows.map((row) => (
-                <div key={row.label} className="flex items-baseline justify-between gap-4 text-sm">
-                  <dt className="text-muted-foreground">{row.label}</dt>
-                  <dd
-                    className={cn(
-                      "tabular-nums text-right",
-                      row.emphasis ? "font-semibold text-foreground" : "text-foreground",
-                    )}
-                  >
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {result.view.rows.length > 0 && (
+              <dl className="mt-5 space-y-2.5 border-t border-border pt-4">
+                {result.view.rows.map((row) => (
+                  <div key={row.label} className="flex items-baseline justify-between gap-4 text-sm">
+                    <dt className="text-muted-foreground">{row.label}</dt>
+                    <dd
+                      className={cn(
+                        "tabular-nums text-right",
+                        row.emphasis ? "font-semibold text-foreground" : "text-foreground",
+                      )}
+                    >
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
 
             {/* Breakdown (steps / per-item) */}
             {result.view.breakdown && result.view.breakdown.rows.length > 0 && (

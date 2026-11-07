@@ -69,6 +69,38 @@ export function roundTo(value: number, decimals: number = 2): number {
 }
 
 /**
+ * Group an integer part with Indian (en-IN) digit grouping, operating on the
+ * RAW string instead of a parsed number so nothing is lost: no float
+ * conversion, no rounding, and a trailing "." or leading "-" survives.
+ * "1234567.5" → "12,34,567.5", "0.6666666667" → "0.6666666667".
+ *
+ * Used by the Basic Calculator, which must show the exact digits the user
+ * typed or the engine computed (Intl.NumberFormat would re-parse and could
+ * round the tail).
+ */
+export function formatGroupedNumericString(raw: string): string {
+  const negative = raw.startsWith("-");
+  const body = negative ? raw.slice(1) : raw;
+  const dot = body.indexOf(".");
+  const intPart = dot === -1 ? body : body.slice(0, dot);
+  const fracPart = dot === -1 ? "" : body.slice(dot); // keeps the "."
+
+  let grouped: string;
+  if (intPart.length <= 3) {
+    grouped = intPart;
+  } else {
+    const last3 = intPart.slice(-3);
+    const head = intPart.slice(0, -3);
+    const chunks: string[] = [];
+    for (let i = head.length; i > 0; i -= 2) {
+      chunks.unshift(head.slice(Math.max(0, i - 2), i));
+    }
+    grouped = `${chunks.join(",")},${last3}`;
+  }
+  return `${negative ? "-" : ""}${grouped}${fracPart}`;
+}
+
+/**
  * Safely parse a user-entered numeric string.
  * Returns null for empty/invalid input.
  */

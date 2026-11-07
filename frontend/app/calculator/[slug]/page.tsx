@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCalculator } from "@/modules/calculator/registry/calculator-registry";
+import { BasicCalculator } from "@/modules/calculator/components/basic/basic-calculator";
 import { DiscountCalculator } from "@/modules/calculator/components/discount/discount-calculator";
 import { GstCalculator } from "@/modules/calculator/components/gst/gst-calculator";
 import { EmiCalculator } from "@/modules/calculator/components/emi/emi-calculator";
@@ -21,6 +22,7 @@ const VALID_IDS: CalculatorId[] = [
 
 /** Tools with a built interactive UI. Others show the construction state. */
 const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
+  basic: BasicCalculator,
   discount: DiscountCalculator,
   gst: GstCalculator,
   emi: EmiCalculator,
