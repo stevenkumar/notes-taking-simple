@@ -13,6 +13,7 @@ import { GstCalculator } from "@/modules/calculator/components/gst/gst-calculato
 import { EmiCalculator } from "@/modules/calculator/components/emi/emi-calculator";
 import { InterestCalculator } from "@/modules/calculator/components/interest/interest-calculator";
 import { PercentageCalculator } from "@/modules/calculator/components/percentage/percentage-calculator";
+import { ScientificCalculator } from "@/modules/calculator/components/scientific/scientific-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -29,6 +30,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   emi: EmiCalculator,
   interest: InterestCalculator,
   percentage: PercentageCalculator,
+  scientific: ScientificCalculator,
 };
 
 /** Pre-render every known calculator page at build time. */
