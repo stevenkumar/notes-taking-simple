@@ -11,6 +11,7 @@ import { BasicCalculator } from "@/modules/calculator/components/basic/basic-cal
 import { DiscountCalculator } from "@/modules/calculator/components/discount/discount-calculator";
 import { GstCalculator } from "@/modules/calculator/components/gst/gst-calculator";
 import { EmiCalculator } from "@/modules/calculator/components/emi/emi-calculator";
+import { InterestCalculator } from "@/modules/calculator/components/interest/interest-calculator";
 import { PercentageCalculator } from "@/modules/calculator/components/percentage/percentage-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
@@ -26,6 +27,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   discount: DiscountCalculator,
   gst: GstCalculator,
   emi: EmiCalculator,
+  interest: InterestCalculator,
   percentage: PercentageCalculator,
 };
 
