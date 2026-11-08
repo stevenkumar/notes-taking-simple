@@ -17,6 +17,7 @@ import { ScientificCalculator } from "@/modules/calculator/components/scientific
 import { AgeCalculator } from "@/modules/calculator/components/age/age-calculator";
 import { DateTimeCalculator } from "@/modules/calculator/components/date-time/date-time-calculator";
 import { UnitConverter } from "@/modules/calculator/components/unit/unit-converter";
+import { CurrencyConverter } from "@/modules/calculator/components/currency/currency-converter";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -37,6 +38,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   age: AgeCalculator,
   "date-time": DateTimeCalculator,
   unit: UnitConverter,
+  currency: CurrencyConverter,
 };
 
 /** Pre-render every known calculator page at build time. */
