@@ -14,6 +14,7 @@ import { EmiCalculator } from "@/modules/calculator/components/emi/emi-calculato
 import { InterestCalculator } from "@/modules/calculator/components/interest/interest-calculator";
 import { PercentageCalculator } from "@/modules/calculator/components/percentage/percentage-calculator";
 import { ScientificCalculator } from "@/modules/calculator/components/scientific/scientific-calculator";
+import { AgeCalculator } from "@/modules/calculator/components/age/age-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -31,6 +32,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   interest: InterestCalculator,
   percentage: PercentageCalculator,
   scientific: ScientificCalculator,
+  age: AgeCalculator,
 };
 
 /** Pre-render every known calculator page at build time. */
