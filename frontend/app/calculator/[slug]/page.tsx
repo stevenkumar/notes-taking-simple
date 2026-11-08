@@ -15,6 +15,7 @@ import { InterestCalculator } from "@/modules/calculator/components/interest/int
 import { PercentageCalculator } from "@/modules/calculator/components/percentage/percentage-calculator";
 import { ScientificCalculator } from "@/modules/calculator/components/scientific/scientific-calculator";
 import { AgeCalculator } from "@/modules/calculator/components/age/age-calculator";
+import { DateTimeCalculator } from "@/modules/calculator/components/date-time/date-time-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -33,6 +34,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   percentage: PercentageCalculator,
   scientific: ScientificCalculator,
   age: AgeCalculator,
+  "date-time": DateTimeCalculator,
 };
 
 /** Pre-render every known calculator page at build time. */
