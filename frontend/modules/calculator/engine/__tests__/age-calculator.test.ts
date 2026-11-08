@@ -11,9 +11,12 @@ import {
   formatDateParts,
   formatAgeFull,
   formatAgeShort,
+  fromSerial,
   isLeapYear,
   isValidDate,
   parseDateInput,
+  toSerial,
+  weekdayIndex,
   weekdayName,
   type DateParts,
 } from "../age-calculator";
@@ -208,6 +211,28 @@ describe("formatting helpers", () => {
     expect(weekdayName(d(2026, 11, 7))).toBe("Saturday");
     expect(weekdayName(d(2000, 1, 1))).toBe("Saturday");
     expect(WEEKDAY_NAMES).toHaveLength(7);
+  });
+
+  it("handles pre-1970 dates (negative serials must not break the index)", () => {
+    expect(weekdayName(d(1969, 12, 31))).toBe("Wednesday");
+    expect(weekdayName(d(1965, 6, 15))).toBe("Tuesday");
+    expect(weekdayIndex(d(1970, 1, 1))).toBe(4); // Thursday
+    expect(weekdayIndex(d(1969, 12, 31))).toBe(3); // Wednesday
+  });
+
+  it("round-trips dates through day serials", () => {
+    expect(toSerial(d(1970, 1, 1))).toBe(0);
+    expect(toSerial(d(1969, 12, 31))).toBe(-1);
+    const cases = [
+      d(1, 1, 1),
+      d(1965, 6, 15),
+      d(2000, 2, 29),
+      d(2024, 12, 31),
+      d(2026, 11, 8),
+    ];
+    for (const c of cases) expect(fromSerial(toSerial(c))).toEqual(c);
+    expect(fromSerial(0)).toEqual(d(1970, 1, 1));
+    expect(fromSerial(-1)).toEqual(d(1969, 12, 31));
   });
 
   it("pluralises correctly in the full form", () => {

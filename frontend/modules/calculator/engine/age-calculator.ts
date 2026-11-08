@@ -120,11 +120,21 @@ export function isValidDate(d: DateParts): boolean {
 }
 
 /** Day serial number (days since 1970-01-01, timezone-independent). */
-function toSerial(d: DateParts): number {
+export function toSerial(d: DateParts): number {
   const date = new Date(0); // epoch, midnight UTC
   date.setUTCFullYear(d.year, d.month - 1, d.day);
   date.setUTCHours(0, 0, 0, 0);
   return Math.round(date.getTime() / 86_400_000);
+}
+
+/** Inverse of toSerial — calendar date from its day serial number. */
+export function fromSerial(serial: number): DateParts {
+  const date = new Date(serial * 86_400_000);
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+  };
 }
 
 /** Signed whole days from a to b (positive when b is later). */
@@ -171,10 +181,14 @@ export function formatDateParts(d: DateParts): string {
   return `${d.day} ${MONTH_ABBR[d.month - 1]} ${d.year}`;
 }
 
+/** 0 = Sunday … 6 = Saturday — works for any date, pre-epoch included. */
+export function weekdayIndex(d: DateParts): number {
+  return (((toSerial(d) + 4) % 7) + 7) % 7;
+}
+
 /** "Friday" — weekday of the given calendar date. */
 export function weekdayName(d: DateParts): string {
-  // 1970-01-01 (serial 0) was a Thursday → offset 4.
-  return WEEKDAY_NAMES[(toSerial(d) + 4) % 7];
+  return WEEKDAY_NAMES[weekdayIndex(d)];
 }
 
 /** "26 years 10 months 23 days" (singular where appropriate). */
