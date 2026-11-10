@@ -237,8 +237,11 @@ export const CALCULATORS: CalculatorMeta[] = [
     description: "Profit margin, markup, cost price and selling price",
     category: "financial",
     icon: "chart",
-    keywords: ["profit", "loss", "margin", "markup", "cost price", "selling price"],
-    status: "planned",
+    keywords: [
+      "profit", "loss", "margin", "markup", "cost price", "selling price",
+      "profit percent", "gain", "cp", "sp", "how much profit",
+    ],
+    status: "available",
     route: "/calculator/profit-loss",
   },
   {
