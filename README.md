@@ -2,7 +2,7 @@
 
 > A modular productivity platform bringing everyday tools — calculations, tasks, notes, planning and expenses — into a single, unified experience.
 
-**Status:** Phase 0–2 (Foundation + dashboard polish) + Phases 3–6 (offline) complete · 11 interactive calculators · **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4
+**Status:** Phase 0–2 (Foundation + dashboard polish) + Phases 3–6 (offline) complete · 12 interactive calculators · **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4
 
 ---
 
@@ -22,9 +22,9 @@
 | PWA manifest + icons | ✅ |
 | Placeholder pages for Tasks, Notes, Planner, Expenses, Settings | ✅ |
 | Calculation engines — pure functions on decimal.js, no `eval` (Scientific gets a hand-written tokenizer + recursive-descent parser) | ✅ |
-| Calculators — Discount, GST, EMI, Percentage, Basic, Interest, Scientific, Age, Date & Time, Unit Converter, Currency (11 tools) | ✅ |
+| Calculators — Discount, GST, EMI, Percentage, Basic, Interest, Scientific, Age, Date & Time, Unit Converter, Currency, Salary (12 tools) | ✅ |
 | Shared result panel (copy / share / save / clear) + local save history | ✅ |
-| Unit tests — 456 tests across 13 vitest suites | ✅ |
+| Unit tests — 474 tests across 14 vitest suites | ✅ |
 | Currency live-rate backend proxy (offline editable rates already shipped) | ⏳ Later |
 | Backend, auth, cloud sync | ⏳ Later |
 
@@ -52,8 +52,8 @@ frontend/
 │   ├── types/index.ts          # Calculation contracts (Phase 0)
 │   ├── registry/               # Tool metadata + search (synonyms)
 │   ├── engine/                 # Pure decimal.js engines + vitest suites
-│   │   ├── *-calculator.ts     # 11 engines: discount … currency
-│   │   └── __tests__/          # 11 engine suites, 432 tests
+│   │   ├── *-calculator.ts     # 12 engines: discount … salary
+│   │   └── __tests__/          # 12 engine suites, 450 tests
 │   └── components/             # One folder per calculator (types, compute, forms, UI)
 │       └── shared/             # ResultPanel, ToolIcon, FavouriteStar, RecentTracker
 ├── hooks/
@@ -67,7 +67,7 @@ frontend/
 cd frontend
 npm install
 npm run dev        # http://localhost:3000
-npm test           # 456 unit tests (vitest)
+npm test           # 474 unit tests (vitest)
 npm run build      # production build (29 static pages)
 ```
 
@@ -91,6 +91,6 @@ See the product specification for the full plan:
 - **Phase 4** — EMI ✅, Loan/Interest ✅, Discount & Shopping ✅ (complete)
 - **Phase 5** — Age ✅, Date & Time ✅, Unit Converter ✅ (complete)
 - **Phase 6** — Currency ✅ (offline with editable rates + freshness badge) · live backend rate proxy ⏳
-- **Phase 7** — Local save history ✅ for shipped tools · cloud sync, preferences ⏳
+- **Phase 7** — Salary Calculator ✅ (CTC → take-home + monthly gross) · Local save history ✅ for shipped tools · cloud sync, preferences ⏳
 - **Phase 8** — Testing, security, accessibility, production release ⏳
 - **Phase 9+** — Tasks, Notes, Planner, Expenses, mobile apps ⏳
