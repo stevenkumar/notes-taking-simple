@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCalculator } from "@/modules/calculator/registry/calculator-registry";
+import { RecentTracker } from "@/modules/calculator/components/shared/recent-tracker";
 import { BasicCalculator } from "@/modules/calculator/components/basic/basic-calculator";
 import { DiscountCalculator } from "@/modules/calculator/components/discount/discount-calculator";
 import { GstCalculator } from "@/modules/calculator/components/gst/gst-calculator";
@@ -109,6 +110,9 @@ async function ToolView({ params }: Props) {
 
   return (
     <>
+      {/* Feeds the dashboard's Recent activity list for live tools. */}
+      {!isPlanned && <RecentTracker id={tool.id} />}
+
       <PageHeader
         title={tool.name}
         description={tool.description}

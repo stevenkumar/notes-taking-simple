@@ -8,66 +8,28 @@ import {
   X,
   ArrowRight,
   Sparkles,
-  Calculator,
-  FlaskConical,
-  Percent,
-  Banknote,
-  ShoppingCart,
-  Tag,
-  Landmark,
-  TrendingUp,
-  CakeSlice,
-  CalendarDays,
-  ArrowLeftRight,
-  Coins,
-  Wallet,
-  BarChart3,
-  Equal,
-  Users,
-  HeartPulse,
-  Fuel,
-  Zap,
+  Star,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
+import { loadFavourites, toggleFavourite } from "@/utils/tool-prefs";
+import { ToolIcon } from "@/modules/calculator/components/shared/tool-icon";
+import { FavouriteStar } from "@/modules/calculator/components/shared/favourite-star";
 import {
   CATEGORIES,
   CALCULATORS,
+  getCalculator,
   searchCalculators,
   getCalculatorsByCategory,
 } from "@/modules/calculator/registry/calculator-registry";
-import type { CalculatorMeta, CalculatorCategory } from "@/modules/calculator/types";
-
-/** Icon resolver for tool/category icons. */
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  calculator: Calculator,
-  flask: FlaskConical,
-  percent: Percent,
-  banknote: Banknote,
-  "shopping-cart": ShoppingCart,
-  tag: Tag,
-  landmark: Landmark,
-  "trending-up": TrendingUp,
-  cake: CakeSlice,
-  calendar: CalendarDays,
-  "arrow-left-right": ArrowLeftRight,
-  coins: Coins,
-  wallet: Wallet,
-  chart: BarChart3,
-  equal: Equal,
-  users: Users,
-  heart: HeartPulse,
-  fuel: Fuel,
-  zap: Zap,
-};
-
-function ToolIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = ICONS[name] ?? ICONS.calculator!;
-  return <Icon className={className} />;
-}
+import type {
+  CalculatorMeta,
+  CalculatorCategory,
+  CalculatorId,
+} from "@/modules/calculator/types";
 
 const EXAMPLE_QUERIES = [
   "How much GST?",
@@ -84,6 +46,26 @@ export default function CalculatorDashboardPage() {
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const [favourites, setFavourites] = useState<CalculatorId[]>([]);
+
+  // Storage is client-only: [] matches the SSR render, then the real list
+  // loads post-mount without a hydration mismatch.
+  useEffect(() => {
+    setFavourites(loadFavourites());
+  }, []);
+
+  const handleToggleFavourite = useCallback((id: CalculatorId) => {
+    setFavourites(toggleFavourite(id));
+  }, []);
+
+  const favouriteTools = useMemo(
+    () =>
+      favourites
+        .map((id) => getCalculator(id))
+        .filter((tool): tool is CalculatorMeta => Boolean(tool)),
+    [favourites],
+  );
 
   const results = useMemo(() => searchCalculators(query), [query]);
 
@@ -240,6 +222,30 @@ export default function CalculatorDashboardPage() {
         </div>
       )}
 
+      {/* Favourites (starred tools, shown once loaded from storage) */}
+      {!showResults && favouriteTools.length > 0 && (
+        <section aria-labelledby="favourites-heading">
+          <h2 id="favourites-heading" className="text-sm font-medium text-muted-foreground mb-3">
+            Favourites
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {favouriteTools.map((tool) => (
+              <Link
+                key={tool.id}
+                href={tool.route}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                <Star
+                  className="h-3.5 w-3.5 fill-current text-amber-500"
+                  aria-hidden="true"
+                />
+                {tool.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Categories */}
       {!showResults && (
         <section aria-labelledby="categories-heading">
@@ -303,20 +309,23 @@ export default function CalculatorDashboardPage() {
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredTools.map((tool) => (
-                <Link
-                  key={tool.id}
-                  href={tool.route}
-                  className="group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-xl"
-                >
+                <div key={tool.id} className="group relative">
                   <Card className="h-full transition-all duration-150 group-hover:shadow-md group-hover:border-primary/30">
                     <CardContent className="flex h-full flex-col gap-3">
                       <div className="flex items-start justify-between">
                         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                           <ToolIcon name={tool.icon} className="h-5 w-5" />
                         </div>
-                        {tool.priority === "high" && (
-                          <Badge variant="warning">Popular</Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {tool.priority === "high" && (
+                            <Badge variant="warning">Popular</Badge>
+                          )}
+                          <FavouriteStar
+                            toolName={tool.name}
+                            active={favourites.includes(tool.id)}
+                            onToggle={() => handleToggleFavourite(tool.id)}
+                          />
+                        </div>
                       </div>
                       <div className="space-y-1 flex-1">
                         <h3 className="text-sm font-semibold leading-tight group-hover:text-primary transition-colors">
@@ -332,7 +341,14 @@ export default function CalculatorDashboardPage() {
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
+                  {/* Stretched link keeps the star a sibling of the anchor
+                      instead of nesting a button inside it. */}
+                  <Link
+                    href={tool.route}
+                    aria-label={`Open ${tool.name}`}
+                    className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  />
+                </div>
               ))}
             </div>
           )}
