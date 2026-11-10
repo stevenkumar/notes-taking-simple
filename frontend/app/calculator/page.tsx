@@ -122,7 +122,7 @@ export default function CalculatorDashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="Calculator & Utilities"
-        description="Search or browse 12 calculation tools across 7 categories"
+        description="Search or browse 13 calculation tools across 7 categories"
       />
 
       {/* Search */}
