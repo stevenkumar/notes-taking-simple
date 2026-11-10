@@ -17,7 +17,7 @@ const MODULES = [
   {
     href: "/calculator",
     title: "Calculator & Utilities",
-    description: "GST, EMI, discounts, conversions and more — 11 tools and counting",
+    description: "GST, EMI, salary, conversions and more — 12 tools and counting",
     icon: Calculator,
     accent: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     badge: "Available",
