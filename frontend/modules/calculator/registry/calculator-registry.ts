@@ -224,8 +224,11 @@ export const CALCULATORS: CalculatorMeta[] = [
     description: "In-hand salary, deductions and take-home pay",
     category: "financial",
     icon: "wallet",
-    keywords: ["salary", "in-hand", "take home", "deduction", "ctc", "pay"],
-    status: "planned",
+    keywords: [
+      "salary", "in-hand", "take home", "deduction", "ctc", "pay",
+      "gross salary", "inhand", "offer letter",
+    ],
+    status: "available",
     route: "/calculator/salary",
   },
   {
