@@ -250,8 +250,11 @@ export const CALCULATORS: CalculatorMeta[] = [
     description: "Simplify ratios and solve proportions",
     category: "basic-math",
     icon: "equal",
-    keywords: ["ratio", "proportion", "simplify", "fraction"],
-    status: "planned",
+    keywords: [
+      "ratio", "proportion", "simplify", "fraction", "gcd",
+      "divide in ratio", "share", "missing term", "equivalent ratio",
+    ],
+    status: "available",
     route: "/calculator/ratio",
   },
   {

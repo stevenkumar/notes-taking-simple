@@ -21,6 +21,7 @@ import { UnitConverter } from "@/modules/calculator/components/unit/unit-convert
 import { CurrencyConverter } from "@/modules/calculator/components/currency/currency-converter";
 import { SalaryCalculator } from "@/modules/calculator/components/salary/salary-calculator";
 import { ProfitLossCalculator } from "@/modules/calculator/components/profit-loss/profit-loss-calculator";
+import { RatioCalculator } from "@/modules/calculator/components/ratio/ratio-calculator";
 import type { CalculatorId } from "@/modules/calculator/types";
 
 const VALID_IDS: CalculatorId[] = [
@@ -44,6 +45,7 @@ const TOOL_VIEWS: Partial<Record<CalculatorId, ComponentType>> = {
   currency: CurrencyConverter,
   salary: SalaryCalculator,
   "profit-loss": ProfitLossCalculator,
+  ratio: RatioCalculator,
 };
 
 /** Pre-render every known calculator page at build time. */
