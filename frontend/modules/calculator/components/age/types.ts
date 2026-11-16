@@ -21,12 +21,13 @@ export interface AgeForm {
 }
 
 /**
- * Stable initial state — birth date pre-filled so mode A shows a live
- * result on first paint; the other modes start with sensible examples.
+ * Stable initial state — every mode shows a live result on first paint:
+ * mode A gets a birth date, mode B a reference day (the 30th birthday
+ * of the default birth date), mode C two example birth dates.
  */
 export const AGE_INITIAL_FORMS: AgeForm = {
   birthDate: "2000-01-01",
-  date: "",
+  date: "2030-01-01",
   first: "1990-05-10",
   second: "1992-08-20",
 };
