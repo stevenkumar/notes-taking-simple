@@ -2,7 +2,7 @@
 
 > A modular productivity platform bringing everyday tools — calculations, tasks, notes, planning and expenses — into a single, unified experience.
 
-**Status:** Phase 0–2 (Foundation + dashboard polish) + Phases 3–6 complete · 14 interactive calculators · **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4
+**Status:** Phase 0–2 (Foundation + dashboard polish) + Phases 3–6 complete · Phase 9 Notes shipped · 14 interactive calculators · **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4
 
 ---
 
@@ -20,11 +20,12 @@
 | Calculator registry (18 tools, 7 categories, synonym search) | ✅ |
 | Dynamic calculator routes with per-tool metadata | ✅ |
 | PWA manifest + icons | ✅ |
-| Placeholder pages for Tasks, Notes, Planner, Expenses, Settings | ✅ |
+| Placeholder pages for Tasks, Planner, Expenses, Settings | ✅ |
 | Calculation engines — pure functions on decimal.js, no `eval` (Scientific gets a hand-written tokenizer + recursive-descent parser) | ✅ |
 | Calculators — Discount, GST, EMI, Percentage, Basic, Interest, Scientific, Age, Date & Time, Unit Converter, Currency, Salary, Profit & Loss, Ratio (14 tools) | ✅ |
 | Shared result panel (copy / share / save / clear) + local save history | ✅ |
-| Unit tests — 567 tests across 18 vitest suites | ✅ |
+| Unit tests — 617 tests across 20 vitest suites | ✅ |
+| Notes module — notebooks, search, pin, plain-text editor (localStorage) | ✅ |
 | Currency live-rate backend proxy (offline editable rates already shipped) | ⏳ Later |
 | Backend, auth, cloud sync | ⏳ Later |
 
@@ -59,6 +60,12 @@ frontend/
 │   └── components/             # One folder per calculator (types, compute, forms, UI)
 │       └── shared/             # ResultPanel, ToolIcon, FavouriteStar, RecentTracker
 ├── hooks/
+├── modules/notes/               # Phase 9: notes engine, storage and workspace
+│   ├── types.ts                 # Note/Notebook contracts + limits
+│   ├── engine.ts                # Pure rules: search, order, CRUD, counts
+│   ├── storage.ts               # Validated, capped localStorage persistence
+│   ├── __tests__/               # 2 suites, 50 tests
+│   └── components/              # Rail, list, editor and the workspace module
 ├── utils/                      # cn, format (INR + en-IN grouping), history, storage, tool-prefs (favourites/recents)
 └── public/                     # manifest.json, PWA icons
 ```
@@ -69,7 +76,7 @@ frontend/
 cd frontend
 npm install
 npm run dev        # http://localhost:3000
-npm test           # 567 unit tests (vitest)
+npm test           # 617 unit tests (vitest)
 npm run build      # production build (29 static pages)
 ```
 
@@ -95,4 +102,4 @@ See the product specification for the full plan:
 - **Phase 6** — Currency ✅ (offline with editable rates + freshness badge) · Live rate proxy ✅ (`/api/rates`, 15-min TTL cache, stale fallback, custom > live > default precedence)
 - **Phase 7** — Salary Calculator ✅ (CTC → take-home + monthly gross) · Profit & Loss Calculator ✅ (verdict, markup & margin on either basis) · Ratio & Proportion Calculator ✅ (simplify, proportion solve, splits) · Local save history ✅ for shipped tools · cloud sync, preferences ⏳
 - **Phase 8** — Testing, security, accessibility, production release ⏳
-- **Phase 9+** — Tasks, Notes, Planner, Expenses, mobile apps ⏳
+- **Phase 9** — Notes ✅ (notebooks with counts, search, pin, plain-text editor, hardened localStorage persistence) · Tasks ⏳, Planner ⏳, Expenses ⏳, mobile apps ⏳
