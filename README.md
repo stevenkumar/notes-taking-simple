@@ -24,7 +24,7 @@
 | Calculation engines — pure functions on decimal.js, no `eval` (Scientific gets a hand-written tokenizer + recursive-descent parser) | ✅ |
 | Calculators — Discount, GST, EMI, Percentage, Basic, Interest, Scientific, Age, Date & Time, Unit Converter, Currency, Salary, Profit & Loss, Ratio (14 tools) | ✅ |
 | Shared result panel (copy / share / save / clear) + local save history | ✅ |
-| Unit tests — 548 tests across 18 vitest suites | ✅ |
+| Unit tests — 567 tests across 18 vitest suites | ✅ |
 | Currency live-rate backend proxy (offline editable rates already shipped) | ⏳ Later |
 | Backend, auth, cloud sync | ⏳ Later |
 
@@ -55,7 +55,7 @@ frontend/
 │   ├── engine/                 # Pure decimal.js engines + vitest suites
 │   │   ├── *-calculator.ts     # 14 engines: discount … ratio
 │   │   ├── live-rates.ts       # Live FX normalization + custom/live/default precedence
-│   │   └── __tests__/          # 15 engine suites, 517 tests
+│   │   └── __tests__/          # 15 engine suites, 536 tests
 │   └── components/             # One folder per calculator (types, compute, forms, UI)
 │       └── shared/             # ResultPanel, ToolIcon, FavouriteStar, RecentTracker
 ├── hooks/
@@ -69,7 +69,7 @@ frontend/
 cd frontend
 npm install
 npm run dev        # http://localhost:3000
-npm test           # 548 unit tests (vitest)
+npm test           # 567 unit tests (vitest)
 npm run build      # production build (29 static pages)
 ```
 
