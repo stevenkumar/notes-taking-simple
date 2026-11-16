@@ -16,6 +16,7 @@ import {
   DEFAULT_RATES,
   getCurrency,
 } from "../../engine/currency-calculator";
+import { applyLiveRates, normalizeLiveRates } from "../../engine/live-rates";
 import { ResultPanel } from "../shared/result-panel";
 import { computeCurrencyResult } from "./compute";
 import { CurrencyFormView, RateTable } from "./currency-forms";
@@ -28,13 +29,17 @@ import {
 } from "./types";
 
 /**
- * Currency Converter — offline conversion across 12 currencies with an
- * editable rate table. All math runs locally in the decimal engine; the
- * rate table persists to localStorage with a freshness badge.
+ * Currency Converter — conversions across 12 currencies with an editable
+ * rate table. All math runs locally in the decimal engine; the table
+ * starts from the built-in snapshot, silently upgrades to a live proxy
+ * snapshot when /api/rates answers, and always yields to custom edits
+ * persisted on this device. The freshness badge shows which of the three
+ * (built-in / live / custom) is in effect.
  */
 export function CurrencyConverter() {
   const [form, setForm] = useState<CurrencyForm>(CURRENCY_INITIAL_FORM);
   const [ratesState, setRatesState] = useState<RatesState>(DEFAULT_RATES_STATE);
+  const [liveSnapshot, setLiveSnapshot] = useState<RatesState | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [copied, setCopied] = useState(false);
 
@@ -49,12 +54,51 @@ export function CurrencyConverter() {
             rates: { ...DEFAULT_RATES, ...parsed.rates },
             source: parsed.source === "custom" ? "custom" : "default",
             editedAt: typeof parsed.editedAt === "number" ? parsed.editedAt : null,
+            liveAsOf: null,
+            fetchedAt: null,
           });
         }
       }
     } catch {
       // Corrupt or unavailable storage — keep the built-in defaults.
     }
+
+    // Silent live-rate refresh: the built-in table flips to a live
+    // snapshot when the proxy answers (custom edits always win via
+    // applyLiveRates). Any failure keeps the current table — conversions
+    // never depend on the network.
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/rates", {
+          headers: { Accept: "application/json" },
+          signal: AbortSignal.timeout(6000),
+        });
+        if (!res.ok) throw new Error(`Rate proxy responded ${res.status}`);
+        const payload: unknown = await res.json();
+        const today = new Date().toISOString().slice(0, 10);
+        const normalized = normalizeLiveRates(payload, today);
+        if (!normalized.ok) throw new Error(normalized.error);
+
+        const servedAt = (payload as { fetchedAt?: unknown }).fetchedAt;
+        const fetchedAt = typeof servedAt === "number" ? servedAt : Date.now();
+        if (cancelled) return;
+
+        setLiveSnapshot({
+          rates: normalized.data.rates,
+          source: "live",
+          editedAt: null,
+          liveAsOf: normalized.data.asOf,
+          fetchedAt,
+        });
+        setRatesState((prev) => applyLiveRates(prev, normalized.data, fetchedAt));
+      } catch {
+        // Offline or proxy failed — keep the built-in/custom table.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const result = useMemo(
@@ -136,6 +180,8 @@ export function CurrencyConverter() {
         rates: { ...prev.rates, [currencyId]: raw },
         source: "custom",
         editedAt: Date.now(),
+        liveAsOf: prev.liveAsOf,
+        fetchedAt: prev.fetchedAt,
       };
       try {
         localStorage.setItem(RATES_STORAGE_KEY, JSON.stringify(next));
@@ -147,7 +193,8 @@ export function CurrencyConverter() {
   };
 
   const handleResetRates = () => {
-    setRatesState(DEFAULT_RATES_STATE);
+    // Back to the freshest unedited table we have: live, else built-in.
+    setRatesState(liveSnapshot ?? DEFAULT_RATES_STATE);
     try {
       localStorage.removeItem(RATES_STORAGE_KEY);
     } catch {
@@ -215,6 +262,7 @@ export function CurrencyConverter() {
             ratesState={ratesState}
             onRateChange={handleRateChange}
             onReset={handleResetRates}
+            canResetToLive={liveSnapshot !== null}
           />
         </CardContent>
       </Card>

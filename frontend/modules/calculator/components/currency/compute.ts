@@ -2,8 +2,9 @@
  * Turns the raw amount + current rate table into a validated ResultView
  * via the currency engine.
  *
- * The view also carries the freshness note: the built-in snapshot shows
- * its as-of date, edited tables show when the user last changed a rate.
+ * The view also carries the freshness note: live tables show the
+ * provider snapshot date, built-in tables show their as-of date, and
+ * edited tables show when the user last changed a rate.
  */
 
 import {
@@ -47,11 +48,19 @@ function groupDigits(money: string): string {
 
 /** Freshness line shown in the note and the copy text. */
 export function ratesFreshness(ratesState: RatesState): string {
-  return ratesState.source === "custom"
-    ? ratesState.editedAt !== null
+  if (ratesState.source === "custom") {
+    return ratesState.editedAt !== null
       ? `Custom rates · last edited ${formatEditedAt(ratesState.editedAt)}.`
-      : "Custom rates."
-    : `Built-in indicative rates as of ${formatDateIso(DEFAULT_RATES_AS_OF)} — edit any rate below to match your source.`;
+      : "Custom rates.";
+  }
+  if (ratesState.source === "live" && ratesState.liveAsOf !== null) {
+    return `Live rates · provider snapshot ${formatDateIso(ratesState.liveAsOf)}${
+      ratesState.fetchedAt !== null
+        ? `, fetched ${formatEditedAt(ratesState.fetchedAt)}`
+        : ""
+    }.`;
+  }
+  return `Built-in indicative rates as of ${formatDateIso(DEFAULT_RATES_AS_OF)} — edit any rate below to match your source.`;
 }
 
 export function computeCurrencyResult(
@@ -108,7 +117,9 @@ export function computeCurrencyResult(
             ? ratesState.editedAt !== null
               ? `custom, edited ${formatEditedAt(ratesState.editedAt)}`
               : "custom"
-            : `built-in as of ${DEFAULT_RATES_AS_OF}`
+            : ratesState.source === "live" && ratesState.liveAsOf !== null
+              ? `live, snapshot ${ratesState.liveAsOf}`
+              : `built-in as of ${DEFAULT_RATES_AS_OF}`
         }`,
       ].join("\n"),
     },

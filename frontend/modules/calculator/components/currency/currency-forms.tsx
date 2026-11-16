@@ -125,8 +125,8 @@ export function CurrencyFormView({
 
       <p className="text-xs text-muted-foreground">
         Conversions run entirely on this device using the rate table below —
-        no network needed. {from && to ? `${from.id} and ${to.id} are` : "Both"}{" "}
-        quoted per 1 USD.
+        only the rates themselves refresh online.{" "}
+        {from && to ? `${from.id} and ${to.id} are` : "Both"} quoted per 1 USD.
       </p>
     </div>
   );
@@ -156,23 +156,32 @@ export function RateTable({
   ratesState,
   onRateChange,
   onReset,
+  canResetToLive,
 }: {
   ratesState: RatesState;
   onRateChange: (currencyId: string, raw: string) => void;
   onReset: () => void;
+  /** True when a live snapshot exists to reset to instead of the defaults. */
+  canResetToLive: boolean;
 }) {
   const isCustom = ratesState.source === "custom";
+  const isLive =
+    !isCustom && ratesState.source === "live" && ratesState.liveAsOf !== null;
+
+  const badgeLabel = isCustom
+    ? ratesState.editedAt !== null
+      ? `Custom · edited ${formatEditedAt(ratesState.editedAt)}`
+      : "Custom rates"
+    : isLive && ratesState.liveAsOf !== null
+      ? `Live · ${formatDateIso(ratesState.liveAsOf)}`
+      : `Built-in · ${formatDateIso(DEFAULT_RATES_AS_OF)}`;
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Badge variant={isCustom ? "default" : "secondary"}>
-            {isCustom
-              ? ratesState.editedAt !== null
-                ? `Custom · edited ${formatEditedAt(ratesState.editedAt)}`
-                : "Custom rates"
-              : `Built-in · ${formatDateIso(DEFAULT_RATES_AS_OF)}`}
+          <Badge variant={isCustom ? "default" : isLive ? "success" : "secondary"}>
+            {badgeLabel}
           </Badge>
           <span className="text-xs text-muted-foreground">
             Rates per 1 USD — editable
@@ -183,10 +192,14 @@ export function RateTable({
           size="sm"
           onClick={onReset}
           disabled={!isCustom}
-          aria-label="Reset rates to the built-in defaults"
+          aria-label={
+            canResetToLive
+              ? "Reset rates to the live feed"
+              : "Reset rates to the built-in defaults"
+          }
         >
           <RotateCcw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-          Reset to defaults
+          {canResetToLive ? "Reset to live rates" : "Reset to defaults"}
         </Button>
       </div>
 
@@ -246,9 +259,11 @@ export function RateTable({
       </ul>
 
       <p className="text-xs text-muted-foreground">
-        Built-in values are an indicative snapshot, not live market rates —
-        edit any of them to match your bank or exchange provider and the
-        badge above flips to “Custom”.
+        {isLive
+          ? "Live rates refresh from the feed while you are online — edit any value to pin your own and the badge flips to “Custom”."
+          : isCustom
+            ? "Custom rates are saved on this device only — reset swaps back to the live feed (or the built-in table when offline)."
+            : "Built-in values are an indicative snapshot, not live market rates — edit any of them to match your bank or exchange provider and the badge above flips to “Custom”."}
       </p>
     </div>
   );

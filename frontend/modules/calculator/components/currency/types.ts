@@ -2,9 +2,16 @@
  * Currency Converter — form state and rate-table persistence types.
  * Forms hold raw strings (controlled inputs); compute.ts validates the
  * amount and passes the current rate table to the engine.
+ *
+ * Rate provenance (RatesState, DEFAULT_RATES_STATE) lives in the
+ * live-rates engine — re-exported here so existing imports keep working.
  */
 
-import { DEFAULT_RATES, type RateTable } from "../../engine/currency-calculator";
+export {
+  DEFAULT_RATES_STATE,
+  type RatesSource,
+  type RatesState,
+} from "../../engine/live-rates";
 
 export interface CurrencyForm {
   /** Raw amount string being converted. */
@@ -20,24 +27,5 @@ export const CURRENCY_INITIAL_FORM: CurrencyForm = {
   to: "INR",
 };
 
-// ── Rate table state ────────────────────────────────────────
-
-export type RatesSource = "default" | "custom";
-
-export interface RatesState {
-  /** Rates per 1 USD (defaults or user-edited). */
-  rates: RateTable;
-  /** "default" = built-in snapshot, "custom" = user has edited a rate. */
-  source: RatesSource;
-  /** Epoch ms of the last edit — null for the untouched default table. */
-  editedAt: number | null;
-}
-
-export const DEFAULT_RATES_STATE: RatesState = {
-  rates: DEFAULT_RATES,
-  source: "default",
-  editedAt: null,
-};
-
-/** localStorage key for the persisted rate table. */
+/** localStorage key for the persisted rate table (custom edits only). */
 export const RATES_STORAGE_KEY = "everyday:currency-rates";
