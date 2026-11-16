@@ -12,7 +12,7 @@ import {
 // ── Registry tables ──────────────────────────────────────────
 
 describe("unit tables", () => {
-  it("exposes the six supported categories", () => {
+  it("exposes the nine supported categories", () => {
     expect(UNIT_CATEGORIES.map((c) => c.id)).toEqual([
       "length",
       "weight",
@@ -20,6 +20,9 @@ describe("unit tables", () => {
       "area",
       "volume",
       "speed",
+      "storage",
+      "pressure",
+      "energy",
     ]);
   });
 
@@ -261,6 +264,116 @@ describe("convertUnits — speed", () => {
   });
 });
 
+// ── Storage (decimal vs binary prefixes) ────────────────────
+
+describe("convertUnits — storage", () => {
+  it("converts bytes to bits (8 exactly)", () => {
+    const r = convertUnits({ category: "storage", value: 1, fromUnit: "B", toUnit: "bit" });
+    expect(r.ok && r.data.result).toBe("8");
+  });
+
+  it("keeps the decimal GB → MB ladder exact (1000)", () => {
+    const r = convertUnits({ category: "storage", value: 1, fromUnit: "GB", toUnit: "MB" });
+    expect(r.ok && r.data.result).toBe("1000");
+  });
+
+  it("keeps the binary GiB → KiB ladder exact (1048576)", () => {
+    const r = convertUnits({ category: "storage", value: 1, fromUnit: "GiB", toUnit: "KiB" });
+    expect(r.ok && r.data.result).toBe("1048576");
+  });
+
+  it("shows the decimal vs binary gap (GB → GiB)", () => {
+    const r = convertUnits({ category: "storage", value: 1, fromUnit: "GB", toUnit: "GiB" });
+    expect(r.ok && r.data.result).toBe("0.931322574615");
+  });
+
+  it("round-trips TB → TiB → TB", () => {
+    const up = convertUnits({ category: "storage", value: 2, fromUnit: "TB", toUnit: "TiB" });
+    expect(up.ok && up.data.result).toBe("1.81898940355");
+    const down = convertUnits({ category: "storage", value: 1, fromUnit: "TiB", toUnit: "TB" });
+    expect(down.ok && down.data.result).toBe("1.09951162778");
+  });
+
+  it("rejects negative sizes", () => {
+    const r = convertUnits({ category: "storage", value: -1, fromUnit: "GB", toUnit: "MB" });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toBe("Enter a positive value");
+  });
+});
+
+// ── Pressure ────────────────────────────────────────────────
+
+describe("convertUnits — pressure", () => {
+  it("converts bar to pascal (100000 exactly)", () => {
+    const r = convertUnits({ category: "pressure", value: 1, fromUnit: "bar", toUnit: "Pa" });
+    expect(r.ok && r.data.result).toBe("100000");
+  });
+
+  it("converts atmospheres to kilopascals (101.325 exactly)", () => {
+    const r = convertUnits({ category: "pressure", value: 1, fromUnit: "atm", toUnit: "kPa" });
+    expect(r.ok && r.data.result).toBe("101.325");
+  });
+
+  it("converts atmospheres to torr (760 exactly)", () => {
+    const r = convertUnits({ category: "pressure", value: 1, fromUnit: "atm", toUnit: "torr" });
+    expect(r.ok && r.data.result).toBe("760");
+  });
+
+  it("converts psi to kilopascals (exact fraction factor)", () => {
+    const r = convertUnits({ category: "pressure", value: 1, fromUnit: "psi", toUnit: "kPa" });
+    expect(r.ok && r.data.result).toBe("6.89475729317");
+  });
+
+  it("converts millimeters of mercury to pascal", () => {
+    const r = convertUnits({ category: "pressure", value: 760, fromUnit: "mmHg", toUnit: "kPa" });
+    expect(r.ok && r.data.result).toBe("101.325014435");
+  });
+
+  it("rejects negative pressure", () => {
+    const r = convertUnits({ category: "pressure", value: -1, fromUnit: "bar", toUnit: "Pa" });
+    expect(r.ok).toBe(false);
+  });
+});
+
+// ── Energy ──────────────────────────────────────────────────
+
+describe("convertUnits — energy", () => {
+  it("converts kilowatt-hours to joules (3600000 exactly)", () => {
+    const r = convertUnits({ category: "energy", value: 1, fromUnit: "kWh", toUnit: "J" });
+    expect(r.ok && r.data.result).toBe("3600000");
+  });
+
+  it("keeps the kilocalorie → calorie ladder exact (1000)", () => {
+    const r = convertUnits({ category: "energy", value: 1, fromUnit: "kcal", toUnit: "cal" });
+    expect(r.ok && r.data.result).toBe("1000");
+  });
+
+  it("converts kilocalories to kilojoules (4.184 exactly)", () => {
+    const r = convertUnits({ category: "energy", value: 1, fromUnit: "kcal", toUnit: "kJ" });
+    expect(r.ok && r.data.result).toBe("4.184");
+  });
+
+  it("keeps the BTU → joule definition exact", () => {
+    const r = convertUnits({ category: "energy", value: 1, fromUnit: "BTU", toUnit: "J" });
+    expect(r.ok && r.data.result).toBe("1055.05585262");
+  });
+
+  it("renders electronvolts in joules exponentially", () => {
+    const r = convertUnits({ category: "energy", value: 1, fromUnit: "eV", toUnit: "J" });
+    expect(r.ok && r.data.result).toBe("1.60217663400e-19");
+  });
+
+  it("converts watt-hours to joules (3600 exactly)", () => {
+    const r = convertUnits({ category: "energy", value: 2.5, fromUnit: "Wh", toUnit: "J" });
+    expect(r.ok && r.data.result).toBe("9000");
+  });
+
+  it("rejects negative energy", () => {
+    const r = convertUnits({ category: "energy", value: -10, fromUnit: "kWh", toUnit: "J" });
+    expect(r.ok).toBe(false);
+  });
+});
+
 // ── Validation & rate line ───────────────────────────────────
 
 describe("convertUnits — validation", () => {
@@ -297,6 +410,9 @@ describe("unitRate", () => {
     expect(unitRate("length", "m", "ft")).toBe("1 m = 3.28083989501 ft");
     expect(unitRate("speed", "kmh", "mph")).toBe("1 km/h = 0.621371192237 mph");
     expect(unitRate("weight", "kg", "lb")).toBe("1 kg = 2.20462262185 lb");
+    expect(unitRate("storage", "GB", "MB")).toBe("1 GB = 1000 MB");
+    expect(unitRate("pressure", "atm", "kPa")).toBe("1 atm = 101.325 kPa");
+    expect(unitRate("energy", "kWh", "J")).toBe("1 kWh = 3600000 J");
   });
 
   it("returns null for temperature (offset units) and unknown units", () => {

@@ -35,7 +35,10 @@ export type UnitCategoryId =
   | "temperature"
   | "area"
   | "volume"
-  | "speed";
+  | "speed"
+  | "storage"
+  | "pressure"
+  | "energy";
 
 export interface UnitDef {
   id: string;
@@ -54,7 +57,7 @@ export interface UnitDef {
 export interface CategoryDef {
   id: UnitCategoryId;
   name: string;
-  /** Base unit symbol (m, kg, °C, m², L, m/s). */
+  /** Base unit symbol (m, kg, °C, m², L, m/s, B, Pa, J). */
   base: string;
   units: UnitDef[];
 }
@@ -141,6 +144,56 @@ export const UNIT_CATEGORIES: CategoryDef[] = [
       { id: "mph", name: "Miles per hour", symbol: "mph", factor: "1609.344/3600" },
       { id: "knot", name: "Knot", symbol: "kn", factor: "1852/3600" },
       { id: "fts", name: "Feet per second", symbol: "ft/s", factor: "0.3048" },
+    ],
+  },
+  {
+    id: "storage",
+    name: "Storage",
+    base: "B",
+    units: [
+      { id: "bit", name: "Bit", symbol: "bit", factor: "0.125" },
+      { id: "B", name: "Byte", symbol: "B", factor: "1" },
+      { id: "KB", name: "Kilobyte (1000)", symbol: "KB", factor: "1000" },
+      { id: "MB", name: "Megabyte (1000)", symbol: "MB", factor: "1000000" },
+      { id: "GB", name: "Gigabyte (1000)", symbol: "GB", factor: "1000000000" },
+      { id: "TB", name: "Terabyte (1000)", symbol: "TB", factor: "1000000000000" },
+      { id: "KiB", name: "Kibibyte (1024)", symbol: "KiB", factor: "1024" },
+      { id: "MiB", name: "Mebibyte (1024)", symbol: "MiB", factor: "1048576" },
+      { id: "GiB", name: "Gibibyte (1024)", symbol: "GiB", factor: "1073741824" },
+      { id: "TiB", name: "Tebibyte (1024)", symbol: "TiB", factor: "1099511627776" },
+    ],
+  },
+  {
+    id: "pressure",
+    name: "Pressure",
+    base: "Pa",
+    units: [
+      { id: "Pa", name: "Pascal", symbol: "Pa", factor: "1" },
+      { id: "kPa", name: "Kilopascal", symbol: "kPa", factor: "1000" },
+      { id: "MPa", name: "Megapascal", symbol: "MPa", factor: "1000000" },
+      { id: "bar", name: "Bar", symbol: "bar", factor: "100000" },
+      { id: "atm", name: "Atmosphere", symbol: "atm", factor: "101325" },
+      // psi: lbf/in² — 0.45359237 kg x 9.80665 m/s² over (0.0254 m)²,
+      // kept as an exact fraction so no precision is lost to rounding.
+      { id: "psi", name: "Pound per square inch", symbol: "psi", factor: "44482216152605/6451600000" },
+      { id: "torr", name: "Torr", symbol: "Torr", factor: "101325/760" },
+      { id: "mmHg", name: "Millimeter of mercury", symbol: "mmHg", factor: "133.322387415" },
+    ],
+  },
+  {
+    id: "energy",
+    name: "Energy",
+    base: "J",
+    units: [
+      { id: "J", name: "Joule", symbol: "J", factor: "1" },
+      { id: "kJ", name: "Kilojoule", symbol: "kJ", factor: "1000" },
+      { id: "MJ", name: "Megajoule", symbol: "MJ", factor: "1000000" },
+      { id: "cal", name: "Calorie (thermochemical)", symbol: "cal", factor: "4.184" },
+      { id: "kcal", name: "Kilocalorie", symbol: "kcal", factor: "4184" },
+      { id: "Wh", name: "Watt-hour", symbol: "Wh", factor: "3600" },
+      { id: "kWh", name: "Kilowatt-hour", symbol: "kWh", factor: "3600000" },
+      { id: "BTU", name: "British thermal unit (IT)", symbol: "BTU", factor: "1055.05585262" },
+      { id: "eV", name: "Electronvolt", symbol: "eV", factor: "1.602176634e-19" },
     ],
   },
 ];
