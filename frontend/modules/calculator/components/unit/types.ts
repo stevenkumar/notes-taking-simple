@@ -33,4 +33,7 @@ export const CATEGORY_DEFAULT_UNITS: Record<
   area: { from: "m2", to: "ft2" },
   volume: { from: "L", to: "gal" },
   speed: { from: "kmh", to: "mph" },
+  storage: { from: "GB", to: "GiB" },
+  pressure: { from: "bar", to: "psi" },
+  energy: { from: "kWh", to: "J" },
 };

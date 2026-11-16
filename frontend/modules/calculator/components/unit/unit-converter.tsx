@@ -19,9 +19,9 @@ import { UnitFormView } from "./unit-forms";
 import { UNIT_INITIAL_FORM, type UnitForm } from "./types";
 
 /**
- * Unit Converter — 6 categories (length, weight, temperature, area,
- * volume, speed) with a 2-field swap layout. All conversion math runs
- * locally in the decimal-based engine.
+ * Unit Converter — 9 categories (length, weight, temperature, area,
+ * volume, speed, storage, pressure, energy) with a 2-field swap layout.
+ * All conversion math runs locally in the decimal-based engine.
  */
 export function UnitConverter() {
   const [form, setForm] = useState<UnitForm>(UNIT_INITIAL_FORM);

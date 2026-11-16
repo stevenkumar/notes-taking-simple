@@ -191,7 +191,7 @@ export const CALCULATORS: CalculatorMeta[] = [
   {
     id: "unit",
     name: "Unit Converter",
-    description: "Convert length, weight, temperature, area, speed and more",
+    description: "Convert length, weight, temperature, area, speed, storage, pressure and energy",
     category: "conversion",
     icon: "arrow-left-right",
     keywords: [
